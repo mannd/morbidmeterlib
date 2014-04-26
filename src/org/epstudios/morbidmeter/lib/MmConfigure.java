@@ -91,10 +91,11 @@ public class MmConfigure extends Activity {
 		Bundle extras = launchIntent.getExtras();
 		appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
 				AppWidgetManager.INVALID_APPWIDGET_ID);
-		Intent cancelResultValue = new Intent();
-		cancelResultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+		Intent cancelResultIntent = new Intent();
+		cancelResultIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
 				appWidgetId);
-		setResult(RESULT_CANCELED, cancelResultValue); // in case user hits back
+		setResult(RESULT_CANCELED, cancelResultIntent); // in case user hits
+														// back
 														// button
 		setContentView(R.layout.configure);
 

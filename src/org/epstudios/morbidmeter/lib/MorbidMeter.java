@@ -50,45 +50,52 @@ public class MorbidMeter extends AppWidgetProvider {
 			int[] appWidgetIds) {
 		Log.d(LOG_TAG, "Updating MM Widgets.");
 		for (int appWidgetId : appWidgetIds) {
-			// due to bug in Android (?documentation) onUpdate actually is
-			// called before configuration complete. However, if startup is
-			// cancelled,
-			// widget is deleted appropriately and alarm is shut down. So it is
-			// not necessary to test for completed configuration.
+			// due to bug in Android onUpdate actually is
+			// called before configuration complete and so we
+			// want to check if config has been completed to avoid
+			// starting the clock needlessly and wasting resources.
+			// In Android 19 widget is deleted (and clock stopped if started)
+			// when config cancelled, but not in Android 17 or earlier.
+			// Thus some zombie widgets that don't do anything can persist,
+			// but there is no fix for this (other than uninstalling and
+			// reinstalling or updating to Android 19).
 			MorbidMeterClock.resetConfiguration(context, appWidgetId);
-			setAlarm(context, appWidgetId,
-					MorbidMeterClock.getFrequency(context));
-			Log.d(LOG_TAG, "Alarm started");
+			if (MorbidMeterClock.configurationIsComplete()) {
+				setAlarm(context, appWidgetId,
+						MorbidMeterClock.getFrequency(context));
+				Log.d(LOG_TAG, "Alarm started");
 
-			Intent intent = new Intent(context, MmConfigure.class);
-			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-			PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
-					intent, PendingIntent.FLAG_UPDATE_CURRENT);
-			// we'll update everything here to avoid a delay if clock frequency
-			// is long
-			RemoteViews views = new RemoteViews(context.getPackageName(),
-					R.layout.main);
-			views.setOnClickPendingIntent(R.id.update_button, pendingIntent);
-			String currentTime = MorbidMeterClock.getFormattedTime(context);
-			if (currentTime != null) {
-				Log.d(LOG_TAG, "Current time = " + currentTime);
-				if (currentTime.equals("0")) {
-					views.setViewVisibility(R.id.time, View.GONE);
-				} else {
-					views.setViewVisibility(R.id.time, View.VISIBLE);
-					views.setTextViewText(R.id.time, currentTime);
+				Intent intent = new Intent(context, MmConfigure.class);
+				intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+						appWidgetId);
+				PendingIntent pendingIntent = PendingIntent.getActivity(
+						context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+				// we'll update everything here to avoid a delay if clock
+				// frequency is long
+				RemoteViews views = new RemoteViews(context.getPackageName(),
+						R.layout.main);
+				views.setOnClickPendingIntent(R.id.update_button, pendingIntent);
+				String currentTime = MorbidMeterClock.getFormattedTime(context);
+				if (currentTime != null) {
+					Log.d(LOG_TAG, "Current time = " + currentTime);
+					if (currentTime.equals("0")) {
+						views.setViewVisibility(R.id.time, View.GONE);
+					} else {
+						views.setViewVisibility(R.id.time, View.VISIBLE);
+						views.setTextViewText(R.id.time, currentTime);
+					}
 				}
-			}
-			views.setProgressBar(R.id.progressBar, 100,
-					MorbidMeterClock.percentAlive(), false);
+				views.setProgressBar(R.id.progressBar, 100,
+						MorbidMeterClock.percentAlive(), false);
 
-			// only need to change label onUpdate, not by MmService
-			String label = MorbidMeterClock.getLabel();
-			if (label != null) {
-				views.setTextViewText(R.id.text, label);
-				Log.d(LOG_TAG, "Label updated.");
+				// only need to change label onUpdate, not by MmService
+				String label = MorbidMeterClock.getLabel();
+				if (label != null) {
+					views.setTextViewText(R.id.text, label);
+					Log.d(LOG_TAG, "Label updated.");
+				}
+				appWidgetManager.updateAppWidget(appWidgetId, views);
 			}
-			appWidgetManager.updateAppWidget(appWidgetId, views);
 		}
 		super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
