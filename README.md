@@ -1,8 +1,11 @@
 ## Description 
-MorbidMeter is on [Android](http://www.android.com) as
-an app widget.  MorbidMeter is a perverse little program that puts
+MorbidMeter is an [Android](http://www.android.com) 
+app widget.  MorbidMeter is a perverse app that puts
 your lifespan into perspective using various timescales that are
 easier (or sometimes harder) to grasp than an actual lifetime.
+MorbidMeter can also be used as a countdown widget to countdown
+to other (not necessarily morbid) events, such as retirement or
+graduation.
 
 Time is running out -- MorbidMeter lets you know how quickly!
 

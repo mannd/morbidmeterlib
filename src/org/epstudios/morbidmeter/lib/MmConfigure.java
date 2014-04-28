@@ -27,8 +27,6 @@ import java.util.Set;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.app.PendingIntent.CanceledException;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -196,15 +194,16 @@ public class MmConfigure extends Activity {
 				if (configuration.user.isSane()) {
 					configuration.configurationComplete = true;
 					savePrefs(context, appWidgetId, configuration);
-
-					PendingIntent updatePending = MorbidMeter
-							.makeControlPendingIntent(context,
-									MmService.UPDATE, appWidgetId);
-					try {
-						updatePending.send();
-					} catch (CanceledException e) {
-						e.printStackTrace();
-					}
+					// Code below probably can be deleted, as onUpdate in
+					// MorbidMeter updates the clock immediately
+					// PendingIntent updatePending = MorbidMeter
+					// .makeControlPendingIntent(context,
+					// MmService.UPDATE, appWidgetId);
+					// try {
+					// updatePending.send();
+					// } catch (CanceledException e) {
+					// e.printStackTrace();
+					// }
 					AppWidgetManager appWidgetManager = AppWidgetManager
 							.getInstance(context);
 					ComponentName thisAppWidget = new ComponentName(context
