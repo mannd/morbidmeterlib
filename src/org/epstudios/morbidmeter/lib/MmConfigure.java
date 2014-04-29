@@ -44,6 +44,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
+import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -70,6 +71,7 @@ public class MmConfigure extends Activity {
 
 	private EditText userNameEditText;
 	private DatePicker birthDayDatePicker;
+	private DatePicker deathDayDatePicker;
 	private EditText longevityEditText;
 	private Spinner timeScaleSpinner;
 	private Spinner frequencySpinner;
@@ -99,6 +101,7 @@ public class MmConfigure extends Activity {
 
 		userNameEditText = (EditText) findViewById(R.id.user_name);
 		birthDayDatePicker = (DatePicker) findViewById(R.id.birthday);
+		deathDayDatePicker = (DatePicker) findViewById(R.id.deathday);
 		longevityEditText = (EditText) findViewById(R.id.longevity);
 		timeScaleSpinner = (Spinner) findViewById(R.id.timescale);
 		frequencySpinner = (Spinner) findViewById(R.id.update_frequency);
@@ -123,9 +126,32 @@ public class MmConfigure extends Activity {
 		int year = configuration.user.getBirthDay().get(Calendar.YEAR);
 		int month = configuration.user.getBirthDay().get(Calendar.MONTH);
 		int day = configuration.user.getBirthDay().get(Calendar.DAY_OF_MONTH);
-		birthDayDatePicker.updateDate(year, month, day);
+		birthDayDatePicker
+				.init(year, month, day, new MyOnDateChangedListener());
+		int deathYear = configuration.user.deathDay().get(Calendar.YEAR);
+		int deathMonth = configuration.user.deathDay().get(Calendar.MONTH);
+		int deathDay = configuration.user.deathDay().get(Calendar.DAY_OF_MONTH);
+		deathDayDatePicker.init(deathYear, deathMonth, deathDay,
+				new MyOnDateChangedListener());
 		longevityEditText.setText(Double.toString(configuration.user
 				.getLongevity()));
+		// longevityEditText.setOnFocusChangeListener(new
+		// OnFocusChangeListener() {
+		//
+		// @Override
+		// public void onFocusChange(View v, boolean hasFocus) {
+		// // TODO Auto-generated method stub
+		// if (!hasFocus) {
+		// double longevity = Double.parseDouble(longevityEditText
+		// .getText().toString());
+		// deathDayDatePicker.updateDate(deathYear, deathMonth, deathDay);
+		// // deathDayDatePicker.updateDate(deathYear, deathMonth,
+		// // deathDay);
+		// }
+		// }
+		//
+		// });
+
 		// best way to do this is below, so suppress warning
 		@SuppressWarnings("unchecked")
 		ArrayAdapter<String> arrayAdapter = (ArrayAdapter<String>) timeScaleSpinner
@@ -252,6 +278,18 @@ public class MmConfigure extends Activity {
 			}
 		});
 	}
+
+	private class MyOnDateChangedListener implements OnDateChangedListener {
+		@Override
+		public void onDateChanged(DatePicker view, int year, int monthOfYear,
+				int dayOfMonth) {
+			double longevity = configuration.user.longevityFromDeathDate(year,
+					monthOfYear, dayOfMonth);
+			// round to 3 places
+			longevity = Math.round(longevity * 1000.00) / 1000.00;
+			longevityEditText.setText(Double.toString(longevity));
+		}
+	};
 
 	private void displayHelpMessage() {
 		AlertDialog dialog = new AlertDialog.Builder(this).create();
@@ -382,8 +420,8 @@ public class MmConfigure extends Activity {
 		Calendar birthDay = new GregorianCalendar();
 		birthDay.set(year, month, day);
 		double longevity = prefs.getFloat(LONGEVITY_KEY + appWidgetId, 79.0f);
-		// round to 2 decimal places
-		longevity = Math.round(longevity * 100.00) / 100.00;
+		// round to 3 decimal places
+		longevity = Math.round(longevity * 1000.00) / 1000.00;
 		configuration.user = new User(name, birthDay, longevity);
 		configuration.timeScaleName = prefs.getString(TIMESCALE_KEY
 				+ appWidgetId, context.getString(R.string.ts_time));

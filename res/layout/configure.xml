@@ -50,6 +50,19 @@
             <requestFocus />
         </EditText>
 
+        <TextView
+            android:id="@+id/textViewDeathday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/deathday_label"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <DatePicker
+            android:id="@+id/deathday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:calendarViewShown="false" />
+
         <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"

@@ -42,6 +42,17 @@ public class User {
 		return deathDay;
 	}
 
+	public double longevityFromDeathDate(int year, int month, int dayOfMonth) {
+		Calendar deathDate = GregorianCalendar.getInstance();
+		deathDate.set(year, month, dayOfMonth);
+		long longevityInMsec = deathDate.getTimeInMillis() - birthDayMsec();
+		if (longevityInMsec <= 0) {
+			return 0.0;
+		} else {
+			return (double) longevityInMsec / msecsPerYear;
+		}
+	}
+
 	public boolean isDead() {
 		return msecAlive() + birthDayMsec() > deathDay().getTimeInMillis();
 	}
