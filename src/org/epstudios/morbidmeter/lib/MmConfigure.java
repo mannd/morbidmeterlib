@@ -49,6 +49,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class MmConfigure extends Activity {
 	private static final String LOG_TAG = "MM";
@@ -72,6 +73,7 @@ public class MmConfigure extends Activity {
 	private EditText userNameEditText;
 	private DatePicker birthDayDatePicker;
 	private DatePicker deathDayDatePicker;
+	private TextView longevityTextView;
 	private EditText longevityEditText;
 	private Spinner timeScaleSpinner;
 	private Spinner frequencySpinner;
@@ -102,6 +104,7 @@ public class MmConfigure extends Activity {
 		userNameEditText = (EditText) findViewById(R.id.user_name);
 		birthDayDatePicker = (DatePicker) findViewById(R.id.birthday);
 		deathDayDatePicker = (DatePicker) findViewById(R.id.deathday);
+		longevityTextView = (TextView) findViewById(R.id.longevityTextView);
 		longevityEditText = (EditText) findViewById(R.id.longevity);
 		timeScaleSpinner = (Spinner) findViewById(R.id.timescale);
 		frequencySpinner = (Spinner) findViewById(R.id.update_frequency);
@@ -133,6 +136,8 @@ public class MmConfigure extends Activity {
 		int deathDay = configuration.user.deathDay().get(Calendar.DAY_OF_MONTH);
 		deathDayDatePicker.init(deathYear, deathMonth, deathDay,
 				new MyOnDateChangedListener());
+		longevityTextView.setText(getLongevityText(configuration.user
+				.getLongevity()));
 		longevityEditText.setText(Double.toString(configuration.user
 				.getLongevity()));
 		// longevityEditText.setOnFocusChangeListener(new
@@ -217,7 +222,8 @@ public class MmConfigure extends Activity {
 				configuration.notificationSound = notificationSoundRadioGroup
 						.getCheckedRadioButtonId();
 
-				if (configuration.user.isSane()) {
+				if (longevityEditText.getText().length() > 0
+						&& configuration.user.isSane()) {
 					configuration.configurationComplete = true;
 					savePrefs(context, appWidgetId, configuration);
 					// Code below probably can be deleted, as onUpdate in
@@ -283,13 +289,24 @@ public class MmConfigure extends Activity {
 		@Override
 		public void onDateChanged(DatePicker view, int year, int monthOfYear,
 				int dayOfMonth) {
-			double longevity = configuration.user.longevityFromDeathDate(year,
-					monthOfYear, dayOfMonth);
+			double longevity = User.getLongevity(birthDayDatePicker.getYear(),
+					birthDayDatePicker.getMonth(),
+					birthDayDatePicker.getDayOfMonth(),
+					deathDayDatePicker.getYear(),
+					deathDayDatePicker.getMonth(),
+					deathDayDatePicker.getDayOfMonth());
 			// round to 3 places
 			longevity = Math.round(longevity * 1000.00) / 1000.00;
 			longevityEditText.setText(Double.toString(longevity));
+			longevityTextView.setText(getLongevityText(longevity));
 		}
 	};
+
+	private String getLongevityText(double longevity) {
+		return getString(R.string.longevity_label) + " "
+				+ Double.toString(longevity) + " "
+				+ getString(R.string.longevity_label_completion);
+	}
 
 	private void displayHelpMessage() {
 		AlertDialog dialog = new AlertDialog.Builder(this).create();
