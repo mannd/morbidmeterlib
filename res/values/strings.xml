@@ -2,9 +2,10 @@
 <resources>
 
     <string name="app_name">MorbidMeter</string>
-    <string name="birthday_label">Birthday</string>
+    <string name="birthday_label">Birthday or Start Date</string>
     <string name="longevity_label">Estimated Longevity in Years</string>
     <string name="longevity_hint">Longevity (yrs)</string>
+    <string name="deathday_label">Deathday or End Date</string>
     <string name="timescale_label">Time Scale</string>
     <string name="reverse_time_label">Reverse time</string>
     <string name="show_msec_label">Show msec</string>
