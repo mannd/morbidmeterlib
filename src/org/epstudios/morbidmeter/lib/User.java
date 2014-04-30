@@ -64,6 +64,17 @@ public class User {
 		}
 	}
 
+	public static Calendar getDeathDate(int birthYear, int birthMonth,
+			int birthDayOfMonth, double longevity) {
+		Calendar birthDate = GregorianCalendar.getInstance();
+		birthDate.set(birthYear, birthMonth, birthDayOfMonth);
+		long deathDateInMsecs = birthDate.getTimeInMillis()
+				+ (long) (longevity * msecsPerYear);
+		Calendar deathDate = GregorianCalendar.getInstance();
+		deathDate.setTimeInMillis(deathDateInMsecs);
+		return deathDate;
+	}
+
 	public boolean isDead() {
 		return msecAlive() + birthDayMsec() > deathDay().getTimeInMillis();
 	}

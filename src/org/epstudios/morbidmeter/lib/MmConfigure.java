@@ -36,6 +36,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -53,6 +54,7 @@ import android.widget.TextView;
 
 public class MmConfigure extends Activity {
 	private static final String LOG_TAG = "MM";
+	private static boolean INHIBIT_DATE_CHANGE_LISTENER = false;
 
 	private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 	private static final String PREFS_NAME = "org.epstudios.morbidmeter.lib.MmConfigure";
@@ -140,22 +142,33 @@ public class MmConfigure extends Activity {
 				.getLongevity()));
 		longevityEditText.setText(Double.toString(configuration.user
 				.getLongevity()));
-		// longevityEditText.setOnFocusChangeListener(new
-		// OnFocusChangeListener() {
-		//
-		// @Override
-		// public void onFocusChange(View v, boolean hasFocus) {
-		// // TODO Auto-generated method stub
-		// if (!hasFocus) {
-		// double longevity = Double.parseDouble(longevityEditText
-		// .getText().toString());
-		// deathDayDatePicker.updateDate(deathYear, deathMonth, deathDay);
-		// // deathDayDatePicker.updateDate(deathYear, deathMonth,
-		// // deathDay);
-		// }
-		// }
-		//
-		// });
+		longevityEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if (!hasFocus) {
+					double longevity = 0.0;
+					try {
+						longevity = Double.parseDouble(longevityEditText
+								.getText().toString());
+					} catch (final NumberFormatException e) {
+						longevity = 0.0;
+					}
+					longevityTextView.setText(getLongevityText(longevity));
+					Calendar deathDay = User.getDeathDate(
+							birthDayDatePicker.getYear(),
+							birthDayDatePicker.getMonth(),
+							birthDayDatePicker.getDayOfMonth(), longevity);
+					// disable the datePicker onDateChanged for this transaction
+					INHIBIT_DATE_CHANGE_LISTENER = true;
+					deathDayDatePicker.updateDate(deathDay.get(Calendar.YEAR),
+							deathDay.get(Calendar.MONTH),
+							deathDay.get(Calendar.DAY_OF_MONTH));
+					INHIBIT_DATE_CHANGE_LISTENER = false;
+				}
+			}
+
+		});
 
 		// best way to do this is below, so suppress warning
 		@SuppressWarnings("unchecked")
@@ -207,10 +220,21 @@ public class MmConfigure extends Activity {
 				int month = birthDayDatePicker.getMonth();
 				int day = birthDayDatePicker.getDayOfMonth();
 				configuration.user.getBirthDay().set(year, month, day);
-				configuration.user.setLongevity(Double
-						.parseDouble(longevityEditText.getText().toString()));
+				if (longevityEditText.getText() != null
+						&& longevityEditText.getText().length() > 0) {
+					try {
+						configuration.user.setLongevity(Double
+								.parseDouble(longevityEditText.getText()
+										.toString()));
+					} catch (final NumberFormatException e) {
+						configuration.user.setLongevity(0.0);
+					}
+				} else {
+					configuration.user.setLongevity(0.0);
+				}
 				configuration.timeScaleName = (String) timeScaleSpinner
-						.getSelectedItem();
+
+				.getSelectedItem();
 
 				configuration.updateFrequency = (String) frequencySpinner
 						.getSelectedItem();
@@ -222,8 +246,7 @@ public class MmConfigure extends Activity {
 				configuration.notificationSound = notificationSoundRadioGroup
 						.getCheckedRadioButtonId();
 
-				if (longevityEditText.getText().length() > 0
-						&& configuration.user.isSane()) {
+				if (configuration.user.isSane()) {
 					configuration.configurationComplete = true;
 					savePrefs(context, appWidgetId, configuration);
 					// Code below probably can be deleted, as onUpdate in
@@ -289,6 +312,9 @@ public class MmConfigure extends Activity {
 		@Override
 		public void onDateChanged(DatePicker view, int year, int monthOfYear,
 				int dayOfMonth) {
+			if (INHIBIT_DATE_CHANGE_LISTENER) {
+				return;
+			}
 			double longevity = User.getLongevity(birthDayDatePicker.getYear(),
 					birthDayDatePicker.getMonth(),
 					birthDayDatePicker.getDayOfMonth(),
