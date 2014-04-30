@@ -53,8 +53,18 @@ public class User {
 			int deathDayOfMonth) {
 		Calendar deathDate = GregorianCalendar.getInstance();
 		deathDate.set(deathYear, deathMonth, deathDayOfMonth);
+		// normalize all deathdays to the stroke of midnight
+		deathDate.set(Calendar.HOUR, 0);
+		deathDate.set(Calendar.MINUTE, 0);
+		deathDate.set(Calendar.SECOND, 0);
+		deathDate.set(Calendar.MILLISECOND, 0);
 		Calendar birthDate = GregorianCalendar.getInstance();
 		birthDate.set(birthYear, birthMonth, birthDayOfMonth);
+		// normalize all birthdays to the stroke of midnight
+		birthDate.set(Calendar.HOUR, 0);
+		birthDate.set(Calendar.MINUTE, 0);
+		birthDate.set(Calendar.SECOND, 0);
+		birthDate.set(Calendar.MILLISECOND, 0);
 		long longevityInMsec = deathDate.getTimeInMillis()
 				- birthDate.getTimeInMillis();
 		if (longevityInMsec <= 0) {
@@ -68,6 +78,11 @@ public class User {
 			int birthDayOfMonth, double longevity) {
 		Calendar birthDate = GregorianCalendar.getInstance();
 		birthDate.set(birthYear, birthMonth, birthDayOfMonth);
+		// normalize all birthdays to the stroke of midnight
+		birthDate.set(Calendar.HOUR, 0);
+		birthDate.set(Calendar.MINUTE, 0);
+		birthDate.set(Calendar.SECOND, 0);
+		birthDate.set(Calendar.MILLISECOND, 0);
 		long deathDateInMsecs = birthDate.getTimeInMillis()
 				+ (long) (longevity * msecsPerYear);
 		Calendar deathDate = GregorianCalendar.getInstance();

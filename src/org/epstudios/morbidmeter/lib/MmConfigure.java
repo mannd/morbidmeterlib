@@ -322,7 +322,7 @@ public class MmConfigure extends Activity {
 					deathDayDatePicker.getMonth(),
 					deathDayDatePicker.getDayOfMonth());
 			// round to 3 places
-			longevity = Math.round(longevity * 1000.00) / 1000.00;
+			longevity = Math.round(longevity * 10000.000) / 10000.000;
 			longevityEditText.setText(Double.toString(longevity));
 			longevityTextView.setText(getLongevityText(longevity));
 		}
@@ -464,7 +464,7 @@ public class MmConfigure extends Activity {
 		birthDay.set(year, month, day);
 		double longevity = prefs.getFloat(LONGEVITY_KEY + appWidgetId, 79.0f);
 		// round to 3 decimal places
-		longevity = Math.round(longevity * 1000.00) / 1000.00;
+		longevity = Math.round(longevity * 10000.000) / 10000.000;
 		configuration.user = new User(name, birthDay, longevity);
 		configuration.timeScaleName = prefs.getString(TIMESCALE_KEY
 				+ appWidgetId, context.getString(R.string.ts_time));
