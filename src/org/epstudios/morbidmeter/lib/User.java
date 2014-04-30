@@ -23,8 +23,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class User {
-	final private double daysPerYear = 365.25;
-	final private long msecsPerYear = (long) (daysPerYear * 24 * 60 * 60 * 1000);
+	final static private double daysPerYear = 365.25;
+	final static private long msecsPerYear = (long) (daysPerYear * 24 * 60 * 60 * 1000);
 
 	public User(String name, Calendar birthDay, double longevity) {
 		this.name = name;
@@ -40,6 +40,39 @@ public class User {
 		Calendar deathDay = new GregorianCalendar();
 		deathDay.setTimeInMillis(deathDayMsec());
 		return deathDay;
+	}
+
+	public double longevityFromDeathDate(int year, int month, int dayOfMonth) {
+		return getLongevity(birthDay.get(Calendar.YEAR),
+				birthDay.get(Calendar.MONTH),
+				birthDay.get(Calendar.DAY_OF_MONTH), year, month, dayOfMonth);
+	}
+
+	public static double getLongevity(int birthYear, int birthMonth,
+			int birthDayOfMonth, int deathYear, int deathMonth,
+			int deathDayOfMonth) {
+		Calendar deathDate = GregorianCalendar.getInstance();
+		deathDate.set(deathYear, deathMonth, deathDayOfMonth);
+		Calendar birthDate = GregorianCalendar.getInstance();
+		birthDate.set(birthYear, birthMonth, birthDayOfMonth);
+		long longevityInMsec = deathDate.getTimeInMillis()
+				- birthDate.getTimeInMillis();
+		if (longevityInMsec <= 0) {
+			return 0.0;
+		} else {
+			return (double) longevityInMsec / msecsPerYear;
+		}
+	}
+
+	public static Calendar getDeathDate(int birthYear, int birthMonth,
+			int birthDayOfMonth, double longevity) {
+		Calendar birthDate = GregorianCalendar.getInstance();
+		birthDate.set(birthYear, birthMonth, birthDayOfMonth);
+		long deathDateInMsecs = birthDate.getTimeInMillis()
+				+ (long) (longevity * msecsPerYear);
+		Calendar deathDate = GregorianCalendar.getInstance();
+		deathDate.setTimeInMillis(deathDateInMsecs);
+		return deathDate;
 	}
 
 	public boolean isDead() {
