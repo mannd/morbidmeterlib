@@ -99,7 +99,7 @@ public class MorbidMeterClock {
 	static public String getFormattedTime(Context context) {
 
 		final String DECIMAL_FORMAT_STRING = "#.000000";
-		final String SHORT_DECIMAL_FORMAT_STRING = "#.0000";
+		final String SHORT_DECIMAL_FORMAT_STRING = "#,###.0000";
 		String formatString = "";
 		String timeString = "";
 		String units = "";
@@ -222,18 +222,26 @@ public class MorbidMeterClock {
 		// deal with raw time scales, i.e. real time
 		if (configuration.timeScaleName.equals(context
 				.getString(R.string.ts_raw))) {
+			formatString += "#,###";
+			formatter = new DecimalFormat(formatString);
+
 			if (configuration.reverseTime)
-				timeString = configuration.user.reverseMsecAlive()
-						+ " msec remaining";
+				timeString = formatter.format(configuration.user
+						.reverseMsecAlive()) + " msec remaining";
 			else
-				timeString = configuration.user.msecAlive() + " msec alive";
+				timeString = formatter.format(configuration.user.msecAlive())
+						+ " msec alive";
 		} else if (configuration.timeScaleName.equals(context
 				.getString(R.string.ts_seconds))) {
+			formatString += "#,###";
+			formatter = new DecimalFormat(formatString);
+
 			if (configuration.reverseTime)
-				timeString = configuration.user.reverseSecAlive()
-						+ " sec remaining";
+				timeString = formatter.format(configuration.user
+						.reverseSecAlive()) + " sec remaining";
 			else
-				timeString = configuration.user.secAlive() + " sec alive";
+				timeString = formatter.format(configuration.user.secAlive())
+						+ " sec alive";
 		}
 		// age in days or years does a different calculation
 		else if (configuration.timeScaleName.equals(context
