@@ -1,20 +1,12 @@
 ## Description 
-MorbidMeter is an [Android](http://www.android.com) 
-app widget.  MorbidMeter is a perverse app that puts
-your lifespan into perspective using various timescales that are
-easier (or sometimes harder) to grasp than an actual lifetime.
-MorbidMeter can also be used as a countdown widget to countdown
-to other (not necessarily morbid) events, such as retirement or
-graduation.
-
-Time is running out -- MorbidMeter lets you know how quickly!
-
-
-MorbidMeter is open source, and available under the 
-[GNU GPL v3 license.](//http://www.gnu.org/licenses/gpl.html)
+!! NOTE: DEVELOPMENT CLOSED IN THIS REPOSITORY
+morbidmeterlib has been incorporated into the morbidmeter-android repository.  No further changes should be made to this repository.
 
 ## License
 Copyright 2011 [EP Studios, Inc.](http://www.epstudiossoftware.com)
+
+MorbidMeter is open source, and available under the 
+[GNU GPL v3 license.](//http://www.gnu.org/licenses/gpl.html)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
